@@ -49,7 +49,7 @@ return $location;
 ```
 With this in place, make a POST request: https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XRoute/experimental/calculateRoute
 
-#### Step 4: Extracting polyline from ArcGIS using Source-Destination Geocodes
+#### Step 4: Extracting polyline from PTV using Source-Destination Geocodes
 
 With `CURLOPT_POSTFIELDS` send the following body
 
