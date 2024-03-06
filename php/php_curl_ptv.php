@@ -1,11 +1,18 @@
 <?php
 error_reporting(0);
 
+$PTV_API_KEY = getenv('PTV_API_KEY');
+$PTV_API_URL = "https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XRoute/experimental/calculateRoute";
+
+$TOLLGURU_API_KEY = getenv('TOLLGURU_API_KEY');
+$TOLLGURU_API_URL = "https://apis.tollguru.com/toll/v2";
+$POLYLINE_ENDPOINT = "complete-polyline-from-mapping-service";
+
 //connecting to ptv...
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XRoute/experimental/calculateRoute',
+  CURLOPT_URL => $PTV_API_URL,
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
@@ -79,7 +86,7 @@ curl_setopt_array($curl, array(
   CURLOPT_HTTPHEADER => array(
     'Content-Type: application/json',
     'Accept-Charset: utf-8',
-    'Authorization: Basic <Authorization key>'
+    'Authorization: Basic ' . $PTV_API_KEY
   ),
 ));
 
@@ -116,20 +123,19 @@ $postdata = array(
 $encode_postData = json_encode($postdata);
 
 curl_setopt_array($curl, array(
-CURLOPT_URL => "https://dev.tollguru.com/v1/calc/route",
-CURLOPT_RETURNTRANSFER => true,
-CURLOPT_ENCODING => "",
-CURLOPT_MAXREDIRS => 10,
-CURLOPT_TIMEOUT => 0,
-CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-CURLOPT_CUSTOMREQUEST => "POST",
+  CURLOPT_URL => $TOLLGURU_API_URL . "/" . $POLYLINE_ENDPOINT,
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "POST",
 
-
-//sending ptv polyline to tollguru
-CURLOPT_POSTFIELDS => $encode_postData,
-CURLOPT_HTTPHEADER => array(
-              "content-type: application/json",
-              "x-api-key: tollguru_api_key"),
+  //sending ptv polyline to tollguru
+  CURLOPT_POSTFIELDS => $encode_postData,
+  CURLOPT_HTTPHEADER => array(
+    "content-type: application/json",
+    "x-api-key: " . $TOLLGURU_API_KEY),
 ));
 
 $response = curl_exec($curl);
