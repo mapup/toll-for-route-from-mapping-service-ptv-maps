@@ -16,6 +16,15 @@ TOLLGURU_API_KEY = os.environ.get("TOLLGURU_API_KEY")
 TOLLGURU_API_URL = "https://apis.tollguru.com/toll/v2"
 POLYLINE_ENDPOINT = "complete-polyline-from-mapping-service"
 
+# Explore https://tollguru.com/toll-api-docs to get best of all the parameter that TollGuru has to offer
+request_parameters = {
+    "vehicle": {
+        "type": "2AxlesAuto"
+    },
+    # Visit https://en.wikipedia.org/wiki/Unix_time to know the time format
+    "departure_time": "2021-01-05T09:46:08Z",
+}
+
 #'Authorization' parameter takes "Basic " followed by base64 encodes form of username:password
 # Sample :  'Authorization' : 'Basic eHRvazofSZGrghdtyc56TRkZGEtYrDGFREGTgvbeQxZGI0Njg='
 autho = base64.standard_b64encode(
@@ -23,9 +32,7 @@ autho = base64.standard_b64encode(
 ).decode("utf-8")
 header = {"Content-Type": "application/json", "Authorization": f"Basic {autho}"}
 
-"""Fetching geocodes from PTV"""
-
-
+# Fetching geocodes from PTV
 def get_geocode_from_ptv(address):
     address_actual = address  # storing the actual address before CGI encoding
     address = address.replace(" ", "%20").replace(",", "%2C")
@@ -36,9 +43,7 @@ def get_geocode_from_ptv(address):
     ]  # Returns a dictionary {'x':long,'y':lat} eg:{'x': -72.470237792, 'y': 42.174369817}
 
 
-"""Fetching Polyline from PTV"""
-
-
+# Fetching Polyline from PTV
 def get_polyline_from_ptv(source_geocode_dict, destination_geocode_dict):
     ptv_url = "https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XRoute/experimental/calculateRoute"
     payload = {
@@ -87,20 +92,17 @@ def get_polyline_from_ptv(source_geocode_dict, destination_geocode_dict):
     return polyline_from_ptv
 
 
-"""Fetching Rates from TollGuru"""
-
-
+# Fetching Rates from TollGuru
 def get_rates_from_tollguru(polyline):
-    # Tollguru querry url
+    # Tollguru query url
     Tolls_URL = f"{TOLLGURU_API_URL}/{POLYLINE_ENDPOINT}"
-    # Tollguru resquest parameters
+    # Tollguru request parameters
     headers = {"Content-type": "application/json", "x-api-key": TOLLGURU_API_KEY}
     params = {
         # Explore https://tollguru.com/developers/docs/ to get best of all the parameter that tollguru has to offer
         "source": "ptv",
         "polyline": polyline,  # this is the encoded polyline that we made
-        "vehicleType": "2AxlesAuto",  #'''Visit https://github.com/mapup/toll-tomtom/wiki/Supported-vehicle-type-list-for-TollGuru-for-respective-continents to know more options'''
-        "departure_time": "2021-01-05T09:46:08Z",  #'''Visit https://en.wikipedia.org/wiki/Unix_time to know the time format'''
+        **request_parameters,
     }
     # Requesting Tollguru with parameters
     response_tollguru = requests.post(
