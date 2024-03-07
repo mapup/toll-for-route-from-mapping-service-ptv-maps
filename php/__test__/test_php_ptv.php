@@ -21,6 +21,15 @@ $destination = getCord($item['to']);
 $destination_longitude = $destination['y'];
 $destination_latitude = $destination['x'];
 
+// Explore https://tollguru.com/toll-api-docs to get the best of all the parameters that Tollguru has to offer
+$request_parameters = array(
+  "vehicle" => array(
+      "type" => "2AxlesAuto"
+  ),
+  // Visit https://en.wikipedia.org/wiki/Unix_time to know the time format
+  "departure_time" => "2021-01-05T09:46:08Z"
+);
+
 //connecting to ptv...
 $curl = curl_init();
 
@@ -136,12 +145,10 @@ $curl = curl_init();
 curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
-
 $postdata = array(
-  "vehicleType" => "2AxlesAuto",
   "source" => "here",
-  "departure_time" => "2021-01-15T13:46:17",
-  "polyline" => $p_ptv
+  "polyline" => $p_ptv,
+  ...$request_parameters,
 );
 
 //json encoding source and polyline to send as postfields...

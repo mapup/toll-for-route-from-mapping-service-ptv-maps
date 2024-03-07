@@ -8,6 +8,15 @@ $TOLLGURU_API_KEY = getenv('TOLLGURU_API_KEY');
 $TOLLGURU_API_URL = "https://apis.tollguru.com/toll/v2";
 $POLYLINE_ENDPOINT = "complete-polyline-from-mapping-service";
 
+// Explore https://tollguru.com/toll-api-docs to get the best of all the parameters that Tollguru has to offer
+$request_parameters = array(
+  "vehicle" => array(
+      "type" => "2AxlesAuto"
+  ),
+  // Visit https://en.wikipedia.org/wiki/Unix_time to know the time format
+  "departure_time" => "2021-01-05T09:46:08Z"
+);
+
 //connecting to ptv...
 $curl = curl_init();
 
@@ -116,7 +125,8 @@ curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
 $postdata = array(
   "source" => "here",
-  "polyline" => $p_ptv
+  "polyline" => $p_ptv,
+  ...$request_parameters,
 );
 
 //json encoding source and polyline to send as postfields..
