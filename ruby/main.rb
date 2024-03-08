@@ -10,9 +10,12 @@ PTV_GEOCODE_API_URL = (
     "https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rest/XLocate/locations"
 )
 
-TOLLGURU_API_KEY = os.environ.get("TOLLGURU_API_KEY")
+TOLLGURU_API_KEY = ENV["TOLLGURU_API_KEY"]
 TOLLGURU_API_URL = "https://apis.tollguru.com/toll/v2"
 POLYLINE_ENDPOINT = "complete-polyline-from-mapping-service"
+
+source = get_coord_array("Philadelphia, PA")
+destination = get_coord_array("New York, NY")
 
 # Explore https://tollguru.com/toll-api-docs to get the best of all the parameters that tollguru has to offer
 request_parameters = {
@@ -52,5 +55,4 @@ tollguru_url = "#{TOLLGURU_API_URL}/#{POLYLINE_ENDPOINT}"
 headers = {'content-type' => 'application/json', 'x-api-key' => TOLLGURU_API_KEY}
 body = {'source': "mapbox", 'polyline': google_encoded_polyline, **request_parameters}
 tollguru_response = HTTParty.post(tollguru_url,:body => body.to_json, :headers => headers)
-
-
+puts tollguru_response
