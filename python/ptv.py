@@ -34,13 +34,23 @@ header = {"Content-Type": "application/json", "Authorization": f"Basic {autho}"}
 
 # Fetching geocodes from PTV
 def get_geocode_from_ptv(address):
-    address_actual = address  # storing the actual address before CGI encoding
-    address = address.replace(" ", "%20").replace(",", "%2C")
-    ptv_geocoding_url = f"{PTV_GEOCODE_API_URL}/{address}"
-    res = requests.get(ptv_geocoding_url, headers=header).json()
-    return res["results"][0]["location"][
-        "referenceCoordinate"
-    ]  # Returns a dictionary {'x':long,'y':lat} eg:{'x': -72.470237792, 'y': 42.174369817}
+    try:
+        address_actual = address  # storing the actual address before CGI encoding
+        address = address.replace(" ", "%20").replace(",", "%2C")
+        ptv_geocoding_url = f"{PTV_GEOCODE_API_URL}/{address}"
+        res = requests.get(ptv_geocoding_url, headers=header).json()
+        
+        if "results" in res and res["results"]:
+            return res["results"][0]["location"]["referenceCoordinate"]
+        else:
+            print("No results found for the address:", address_actual)
+            return None
+    except requests.RequestException as e:
+        print("Error in making the request:", e)
+        return None
+    except KeyError as e:
+        print("Error in parsing the response:", e)
+        return None
 
 
 # Fetching Polyline from PTV
