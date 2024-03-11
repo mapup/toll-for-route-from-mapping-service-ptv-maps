@@ -1,11 +1,27 @@
 <?php
 error_reporting(0);
 
+$PTV_API_KEY = getenv('PTV_API_KEY');
+$PTV_API_URL = "https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XRoute/experimental/calculateRoute";
+
+$TOLLGURU_API_KEY = getenv('TOLLGURU_API_KEY');
+$TOLLGURU_API_URL = "https://apis.tollguru.com/toll/v2";
+$POLYLINE_ENDPOINT = "complete-polyline-from-mapping-service";
+
+// Explore https://tollguru.com/toll-api-docs to get the best of all the parameters that Tollguru has to offer
+$request_parameters = array(
+  "vehicle" => array(
+      "type" => "2AxlesAuto"
+  ),
+  // Visit https://en.wikipedia.org/wiki/Unix_time to know the time format
+  "departure_time" => "2021-01-05T09:46:08Z"
+);
+
 //connecting to ptv...
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://xserver2-europe-eu-test.cloud.ptvgroup.com/services/rs/XRoute/experimental/calculateRoute',
+  CURLOPT_URL => $PTV_API_URL,
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
@@ -79,7 +95,7 @@ curl_setopt_array($curl, array(
   CURLOPT_HTTPHEADER => array(
     'Content-Type: application/json',
     'Accept-Charset: utf-8',
-    'Authorization: Basic <Authorization key>'
+    'Authorization: Basic ' . $PTV_API_KEY
   ),
 ));
 
@@ -109,27 +125,27 @@ curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
 $postdata = array(
   "source" => "here",
-  "polyline" => $p_ptv
+  "polyline" => $p_ptv,
+  ...$request_parameters,
 );
 
 //json encoding source and polyline to send as postfields..
 $encode_postData = json_encode($postdata);
 
 curl_setopt_array($curl, array(
-CURLOPT_URL => "https://dev.tollguru.com/v1/calc/route",
-CURLOPT_RETURNTRANSFER => true,
-CURLOPT_ENCODING => "",
-CURLOPT_MAXREDIRS => 10,
-CURLOPT_TIMEOUT => 0,
-CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-CURLOPT_CUSTOMREQUEST => "POST",
+  CURLOPT_URL => $TOLLGURU_API_URL . "/" . $POLYLINE_ENDPOINT,
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "POST",
 
-
-//sending ptv polyline to tollguru
-CURLOPT_POSTFIELDS => $encode_postData,
-CURLOPT_HTTPHEADER => array(
-              "content-type: application/json",
-              "x-api-key: tollguru_api_key"),
+  //sending ptv polyline to tollguru
+  CURLOPT_POSTFIELDS => $encode_postData,
+  CURLOPT_HTTPHEADER => array(
+    "content-type: application/json",
+    "x-api-key: " . $TOLLGURU_API_KEY),
 ));
 
 $response = curl_exec($curl);

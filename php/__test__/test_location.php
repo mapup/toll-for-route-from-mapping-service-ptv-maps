@@ -1,8 +1,8 @@
 <?php
 $locdata = array(
     0 => array(
-        'from' => '2500 Victory Ave Dallas TX 75201',
-        'to' =>  '6969 US-380 Prosper TX 75078'
+        'from' => 'Philadelphia, PA',
+        'to' =>  'New York, NY'
     ),
     1 => Array ( 
         'from' => '1205 W Trinity Mills Rd #112 Carrollton TX 75006',
